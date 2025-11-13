@@ -1,0 +1,140 @@
+%% plainproblemname: Parts in Perfect Order
+\documentclass[11pt]{article}
+\usepackage[a4paper, top=0.8in, bottom=1in, left=1in, right=1in]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{indentfirst}
+\usepackage{tcolorbox}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Overleaf Example},
+    pdfpagemode=FullScreen,
+    }
+
+\urlstyle{same}
+
+% Define \problemname and \illustration if not using Kattis template
+\newcommand{\problemname}[1]{\section*{#1}}
+\newcommand{\illustration}[3]{%
+    \begin{figure}[h]
+        \centering
+        \includegraphics[width=#1\textwidth]{#2}
+        \caption{#3}
+    \end{figure}
+}
+
+\begin{document}
+
+\problemname{Parts in Perfect Order}
+
+Lino is a skilled auto mechanic who just received a large shipment of mechanical parts from one of his suppliers. Each part is labeled with an \textbf{integer} serial number between $0$ and $10\,000$ where the higher the number the more moving parts the piece contains. Lino doesn't like the way the supplier organizes the pieces and as such, decides he wants to reorder them in terms of complexity. In order to do so, before restocking the shelves, Lino wants to organize all the parts in \textbf{descending order} of serial numbers.\newline
+
+However, Lino also likes to avoid \textbf{comparison-based sorting methods} when sorting the pieces like \textbf{quicksort} or \textbf{mergesort}.  
+Instead, Lino uses a \textbf{non-comparison based sorting algorithm} specifically, he enjoys \textbf{Counting Sort} the most in order to efficiently arrange the pieces.\newline
+
+Your task is to read all the serial numbers, see which are the most complicated, and output the complete sorted list from the highest complexity to the lowest.
+
+\illustration{0.7}{parts_histogram.png}{Set of drawings of engines - motor vehicle internal combustion engine, motorcycle, electric motor and a rocket by \href{https://www.istockphoto.com/vector/set-of-drawings-of-engines-motor-vehicle-internal-combustion-engine-motorcycle-gm943569988-257798559}{i000pixels}.}
+
+\section*{Input}
+
+Input starts with an integer $n$ ($1 \le n \le 1\,000\,000$) on the first line equal the total number of pieces received.  
+The next line contains $n$ integers $p_1, p_2, \dots, p_n$ ($0 \le p_i \le 1\,0000$), representing the serial number of each piece.
+
+\section*{Output}
+
+The output should be one line containing the serial numbers \textbf{descending order}, separated by single spaces showing the most complex to least complex part.
+
+\section*{Sample Inputs and Outputs}
+
+\newlength{\boxwidth}
+\setlength{\boxwidth}{0.45\textwidth} 
+\newlength{\boxsep}
+\setlength{\boxsep}{0.1\textwidth}   
+\newlength{\boxheight}
+\setlength{\boxheight}{1cm}            
+
+% Sample 1
+\noindent
+\begin{minipage}[t][\boxheight][t]{\boxwidth}
+\begin{tcolorbox}[colback=white, colframe=black, boxsep=5pt, valign=center]
+\textbf{Input 1:}
+\begin{verbatim}
+8
+120 870 120 999 0 870 540 999
+\end{verbatim}
+\end{tcolorbox}
+\end{minipage}%
+\hspace{\boxsep}%
+\begin{minipage}[t][\boxheight][t]{\boxwidth}
+\begin{tcolorbox}[colback=white, colframe=black, boxsep=5pt, valign=center]
+\textbf{Output 1:}
+\begin{verbatim}
+999 999 870 870 540 120 120 0
+
+\end{verbatim}
+\end{tcolorbox}
+\end{minipage}
+
+\vspace{0.3cm}
+
+% Sample 2
+\noindent
+\begin{minipage}[t][\boxheight][t]{\boxwidth}
+\begin{tcolorbox}[colback=white, colframe=black, boxsep=5pt, valign=center]
+\textbf{Input 2:}
+\begin{verbatim}
+1
+5000
+\end{verbatim}
+\end{tcolorbox}
+\end{minipage}%
+\hspace{\boxsep}%
+\begin{minipage}[t][\boxheight][t]{\boxwidth}
+\begin{tcolorbox}[colback=white, colframe=black, boxsep=5pt, valign=center]
+\textbf{Output 2:}
+\begin{verbatim}
+5000
+
+\end{verbatim}
+\end{tcolorbox}
+\end{minipage}
+
+\vspace{0.3cm}
+
+% Sample 3
+\noindent
+\begin{minipage}[t][\boxheight][t]{\boxwidth}
+\begin{tcolorbox}[colback=white, colframe=black, boxsep=5pt, valign=center]
+\textbf{Input 3:}
+\begin{verbatim}
+5
+42 9000 123 500 9000
+\end{verbatim}
+\end{tcolorbox}
+\end{minipage}%
+\hspace{\boxsep}%
+\begin{minipage}[t][\boxheight][t]{\boxwidth}
+\begin{tcolorbox}[colback=white, colframe=black, boxsep=5pt, valign=center]
+\textbf{Output 3:}
+\begin{verbatim}
+9000 9000 500 123 42
+
+\end{verbatim}
+\end{tcolorbox}
+\end{minipage}
+
+\section*{Requirements}
+\noindent
+In order to recieve full marks your solution must:
+\begin{itemize}
+    \item Not use built-in comparison-based sorting functions.
+    \item A correct implementation should run in \( O(n + k) \) time, where \( k = 10\,001 \).
+\end{itemize}
+
+\end{document}
