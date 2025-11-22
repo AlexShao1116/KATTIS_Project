@@ -1,18 +1,13 @@
-def naive_sort_desc(serial_numbers):
-    if not serial_numbers:
-        return []
-
-    # Simply sort in descending order
+def naive_sort_desc_quadratic(serial_numbers):
+    if not serial_numbers: return []
     return sorted(serial_numbers, reverse=True)
-
-
 def main():
     nb_pieces_received = int(input())
     serial_numbers = list(map(int, input().split()))
 
-    sorted_serials = naive_sort_desc(serial_numbers)
+    sorted_serials =  naive_sort_desc_quadratic(serial_numbers)
 
-    # convert list to string with spaces
+    # convert list to str with spaces
     str_sorted_serials = ' '.join(map(str, sorted_serials))
     print(str_sorted_serials)
 
