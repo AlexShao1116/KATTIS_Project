@@ -1,6 +1,5 @@
 # Deliverable 2
 Correct and Efficient Solution
-
 ## What is the time and space complexity of your solution?
 ### Time Complexity: O(n+m)
 1. Find max_serial -> O(n)
@@ -28,7 +27,7 @@ But in our case with 10000 it is the optimal one.
 
 ## Could a less efficient solution still pass the test cases?
 No, other comparison that is O(nlogn) or O(n^2) would not pass when the test cases is a "stress cases".
-When n approx = 1 000 000 and m range of number is very small, it is almost O(n).
+When n approx = 1 000 000 and m max number is very small (range from 0 in our case), it is almost O(n).
 
 ## Which of the three programming languages performed best?
 C++ -> Java -> Python
@@ -45,7 +44,7 @@ So C++ is better mainly because it accesses memory directly and efficiently for 
 
 ## What are the best-case and worst-case scenarios for your solution?
 ### Best-case
-small range of numbers -> so when all numbers is same
+small range of numbers from 0 -> so when all numbers is same and is near 0.
 and nb of test cases
 ### Worst-case
 when M is very large: large range of numbers
