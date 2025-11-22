@@ -21,9 +21,9 @@ numbers = numbers_line.strip().split()
 assert len(numbers) == n # must have exactly n nbs
 
 for num in numbers:
-    assert re.match('^(0|[1-9][0-9]{0,4})$', num)
+    assert re.match('^(0|[1-9][0-9]{0,4})$', num) # no leading 0
     x = int(num)
-    assert 0 <= x <= 10000
+    assert 0 <= x <= 10000 #range check
     
 # ensure no extra input
 assert sys.stdin.readline() == ''
