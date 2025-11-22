@@ -5,20 +5,21 @@ def count_sort_inverse(serial_numbers):
     n = len(serial_numbers)
     max_serial = max(serial_numbers)
 
-    # create and initialize cntArr
+    # create and init countArr
     countArr = [0] * (max_serial + 1)
 
-    # count frequency of each element
+    # count freq of each element
     for serial in serial_numbers:
         countArr[serial] += 1
 
-    # compute prefix sums
-    for i in range(max_serial - 1, -1, -1):
+    
+    for i in range(max_serial - 1, -1, -1): # compute prefix sums
         countArr[i] += countArr[i + 1]
 
-    # build output array
+    # build sorted array
     sorted_serials = [0] * n
-    # iterate in reverse to keep it stable
+    
+    # iterate to reverse (special part for this question)
     for i in range(n - 1, -1, -1):
         serial = serial_numbers[i]
         sorted_serials[countArr[serial] - 1] = serial

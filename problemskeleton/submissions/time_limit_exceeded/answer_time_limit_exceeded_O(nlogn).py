@@ -1,11 +1,12 @@
-def naive_sort_desc_quadratic(serial_numbers):
+def naive_sort_desc_Timesort(serial_numbers):
     if not serial_numbers: return []
     return sorted(serial_numbers, reverse=True)
+
 def main():
     nb_pieces_received = int(input())
     serial_numbers = list(map(int, input().split()))
 
-    sorted_serials =  naive_sort_desc_quadratic(serial_numbers)
+    sorted_serials =  naive_sort_desc_Timesort(serial_numbers)
 
     # convert list to str with spaces
     str_sorted_serials = ' '.join(map(str, sorted_serials))
