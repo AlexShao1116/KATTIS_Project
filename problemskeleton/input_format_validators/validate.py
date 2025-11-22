@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 
-# This is a sample input validator, written in Python 3.
-
-# Please refer to the comments in README.md for a description of the syntax it
-# is validating. Then, change it as you need.
-
 import sys
 import re
 
@@ -12,24 +7,24 @@ n_line = sys.stdin.readline()
 print(repr(n_line)) # useful for debugging to see where we have read
 assert re.match('^[1-9][0-9]*\n$', n_line) # note: no leading zeros
 n = int(n_line)
-assert 1 <= n <= 100
+'''
+CHANGED FOR 1 <= n <= 1_000_000 
+'''
+assert 1 <= n <= 1_000_000 #range check
 
-unique_strings = set()
-for _ in range(n):
-    case_line = sys.stdin.readline()
-    print(repr(case_line)) # useful for debugging to see where we have read
-    # check the line syntax (string, integer, real)
-    assert re.match('^[a-z]{1,20} (0|-?[1-9][0-9]{0,2}) (0|-?[1-9][0-9]?)(\.[0-9]{1,3})?\n$', case_line)
+# Read 2nd line
+numbers_line = sys.stdin.readline()
+print(repr(numbers_line))  # useful for debugging
 
-    # parse the line
-    s, i, f = case_line.split()
-    assert -100 <= int(i) <= 100
-    assert -10.0 <= float(f) <= 10.0
+# Split numbers
+numbers = numbers_line.strip().split()
+assert len(numbers) == n # must have exactly n nbs
 
-    # verify string uniqueness
-    assert s not in unique_strings
-    unique_strings.add(s)
-
+for num in numbers:
+    assert re.match('^(0|[1-9][0-9]{0,4})$', num)
+    x = int(num)
+    assert 0 <= x <= 10000
+    
 # ensure no extra input
 assert sys.stdin.readline() == ''
 
