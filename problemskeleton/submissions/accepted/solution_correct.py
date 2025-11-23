@@ -12,7 +12,7 @@ def count_sort_inverse(serial_numbers):
     for serial in serial_numbers:
         countArr[serial] += 1
 
-    
+    # (special part for this question)
     for i in range(max_serial - 1, -1, -1): # compute prefix sums
         countArr[i] += countArr[i + 1]
 

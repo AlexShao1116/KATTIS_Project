@@ -18,7 +18,7 @@ def count_sort_inverse(serial_numbers):
 
     # compute prefix sums
     for i in range(1, max_serial + 1):
-        countArr[i] += countArr[i + 1]
+        countArr[i] += countArr[i - 1]
 
     # build output array
     sorted_serials = [0] * n
