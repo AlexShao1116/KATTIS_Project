@@ -17,5 +17,6 @@ def main():
 
     print(" ".join(map(str, sorted_serials)))
 
-
+if __name__ == "__main__":
+    main()
 
