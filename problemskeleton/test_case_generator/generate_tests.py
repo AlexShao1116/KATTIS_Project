@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import os
 import random
 from pathlib import Path
 
@@ -10,9 +9,16 @@ from pathlib import Path
 # Fixed seed for reproducibility
 RANDOM_SEED = 321
 
-# Number of secret test cases to generate
-# (Modify to 30 if your project requires 30)
-NUM_SECRET_CASES = 20
+# Serial numbers must be in [0, 10000]
+MAX_VAL = 10000
+
+# Sizes for big stress tests (secret16–secret20)
+# You can tune these depending on your judge's speed.
+N_LARGE_16 = 200_000
+N_LARGE_17 = 400_000
+N_LARGE_18 = 600_000
+N_LARGE_19 = 800_000
+N_LARGE_20 = 1_000_000
 
 
 # ============================================================
@@ -24,259 +30,154 @@ def ensure_dir(p: Path):
     p.mkdir(parents=True, exist_ok=True)
 
 
-def rand_id(D: int, low: int = None, high: int = None) -> str:
-    """
-    Generate a D-digit numeric ID with leading zeros.
-    The ID value is uniformly drawn from [low, high].
-    """
-    if low is None:
-        low = 0
-    if high is None:
-        high = 10**D - 1
-    v = random.randint(low, high)
-    return f"{v:0{D}d}"
+def rand_serial(low=0, high=MAX_VAL):
+    """Return a random integer serial number in [low, high]."""
+    return random.randint(low, high)
 
 
-def write_case(base_path: Path, name: str, ids, D: int):
+def write_case(base_path: Path, name: str, nums):
     """
     Write one pair of test files:
         base_path/name.in
         base_path/name.ans
 
-    .in contains unsorted IDs.
-    .ans contains IDs sorted by numeric value.
+    .in format (from Parts in Perfect Order):
+        n
+        p1 p2 ... pn
+
+    .ans:
+        same numbers sorted in descending order, space-separated.
     """
-    N = len(ids)
+    N = len(nums)
     in_path = base_path / f"{name}.in"
     ans_path = base_path / f"{name}.ans"
 
-    # Write input file
+    # Input file
     with in_path.open("w", encoding="utf-8") as f_in:
-        f_in.write(f"{N} {D}\n")
-        for s in ids:
-            f_in.write(s + "\n")
+        f_in.write(f"{N}\n")                          # first line: n
+        f_in.write(" ".join(map(str, nums)) + "\n")   # second line: n integers
 
-    # Write answer file (sorted)
-    sorted_ids = sorted(ids, key=lambda x: int(x))
+    # Answer file
+    sorted_desc = sorted(nums, reverse=True)
     with ans_path.open("w", encoding="utf-8") as f_ans:
-        for s in sorted_ids:
-            f_ans.write(s + "\n")
+        f_ans.write(" ".join(map(str, sorted_desc)) + "\n")
 
     print(f"Generated: {in_path}  and  {ans_path}")
 
 
 # ============================================================
-# Sample Test Cases (Shown to participants)
+# Sample Test Cases (from problem statement)
 # ============================================================
 
 def generate_samples(sample_dir: Path):
-    """
-    Generate the 3 sample cases required by the problem statement.
-    Includes one edge case with N = 1.
-    """
+    """Generate the 3 sample cases given in the PDF."""
 
-    # Sample 1: Small case with duplicates and leading zeros
-    D = 3
-    ids = ["002", "100", "011", "010", "002"]
-    write_case(sample_dir, "sample1", ids, D)
+    # Sample 1
+    nums = [120, 870, 120, 999, 0, 870, 540, 999]
+    write_case(sample_dir, "sample1", nums)
 
-    # Sample 2: Reverse order with duplicate values
-    D = 2
-    ids = ["99", "50", "50", "20", "10", "01", "00"]
-    write_case(sample_dir, "sample2", ids, D)
+    # Sample 2
+    nums = [42, 9000, 123, 500, 9000]
+    write_case(sample_dir, "sample2", nums)
 
-    # Sample 3: Edge case (N = 1)
-    D = 5
-    ids = ["00042"]
-    write_case(sample_dir, "sample3", ids, D)
+    # Sample 3
+    nums = [5000]
+    write_case(sample_dir, "sample3", nums)
 
 
 # ============================================================
-# Secret Test Cases
+# Secret Test Cases (secret01–secret20)
 # ============================================================
 
 def generate_secret_cases(secret_dir: Path):
     """
-    Generate 20 secret test cases with specific purposes:
-
-    secret01–secret05: Edge cases
-    secret06–secret10: Normal random cases
-    secret11–secret15: Complicated random / structured
-    secret16–secret20: Large inputs / potential TLE stress
+    secret01–secret15: edge / medium / structured
+    secret16–secret20: HUGE tests with very small value range (0..10)
     """
+    # ---------- small & medium (same as before) ----------
+    write_case(secret_dir, "secret01", [7])
+    write_case(secret_dir, "secret02", [42] * 5)
+    write_case(secret_dir, "secret03", list(range(10)))
+    write_case(secret_dir, "secret04", list(range(20, 10, -1)))
+    write_case(secret_dir, "secret05", [0] * 14 + [9999])
 
-    # ------------- Edge cases -------------
+    write_case(secret_dir, "secret06", [rand_serial() for _ in range(100)])
+    write_case(secret_dir, "secret07", [rand_serial() for _ in range(150)])
+    write_case(secret_dir, "secret08", [rand_serial() for _ in range(120)])
+    write_case(secret_dir, "secret09", [rand_serial(0, 9) for _ in range(50)])
+    write_case(secret_dir, "secret10", [rand_serial(0, 50) for _ in range(150)])
 
-    # secret01: Minimal N = 1, small D
-    name = "secret01"
-    D = 3
-    ids = ["007"]
-    write_case(secret_dir, name, ids, D)
-
-    # secret02: Small N, all IDs identical
-    name = "secret02"
-    D = 2
-    ids = ["42"] * 5
-    write_case(secret_dir, name, ids, D)
-
-    # secret03: Small N, all distinct and already sorted
-    name = "secret03"
-    D = 3
-    vals = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    ids = [f"{v:0{D}d}" for v in vals]
-    write_case(secret_dir, name, ids, D)
-
-    # secret04: Small N, strictly reverse sorted
-    name = "secret04"
-    D = 3
-    vals = list(range(20, 10, -1))  # 20..11
-    ids = [f"{v:0{D}d}" for v in vals]
-    write_case(secret_dir, name, ids, D)
-
-    # secret05: Two-value imbalance (many zeros, one large)
-    name = "secret05"
-    D = 4
-    ids = ["0000"] * 14 + ["9999"]
-    write_case(secret_dir, name, ids, D)
-
-    # ------------- Normal random cases -------------
-
-    # secret06: Medium N random 3-digit IDs
-    name = "secret06"
-    D = 3
-    ids = [rand_id(D) for _ in range(100)]
-    write_case(secret_dir, name, ids, D)
-
-    # secret07: Medium N random 4-digit IDs
-    name = "secret07"
-    D = 4
-    ids = [rand_id(D) for _ in range(150)]
-    write_case(secret_dir, name, ids, D)
-
-    # secret08: Medium N random 5-digit IDs
-    name = "secret08"
-    D = 5
-    ids = [rand_id(D) for _ in range(120)]
-    write_case(secret_dir, name, ids, D)
-
-    # secret09: Random digits (D = 1)
-    name = "secret09"
-    D = 1
-    ids = [str(random.randint(0, 9)) for _ in range(50)]
-    write_case(secret_dir, name, ids, D)
-
-    # secret10: Random 3-digit, dense small numeric range 0..50
-    name = "secret10"
-    D = 3
-    ids = [rand_id(D, 0, 50) for _ in range(150)]
-    write_case(secret_dir, name, ids, D)
-
-    # ------------- Complicated random / structured -------------
-
-    # secret11: Almost sorted 4-digit IDs, with a few random swaps
-    name = "secret11"
-    D = 4
-    N = 200
-    vals = sorted(random.randint(0, 9999) for _ in range(N))
-    ids = [f"{v:0{D}d}" for v in vals]
-    # Perform a few random swaps to slightly disturb the order
+    nums = sorted(rand_serial() for _ in range(200))
     for _ in range(15):
-        i = random.randrange(N)
-        j = random.randrange(N)
-        ids[i], ids[j] = ids[j], ids[i]
-    write_case(secret_dir, name, ids, D)
+        i = random.randrange(200); j = random.randrange(200)
+        nums[i], nums[j] = nums[j], nums[i]
+    write_case(secret_dir, "secret11", nums)
 
-    # secret12: Three clusters (low, mid, high) in 5 digits
-    name = "secret12"
-    D = 5
-    ids = []
-    # low cluster: 0..500
-    ids += [rand_id(D, 0, 500) for _ in range(80)]
-    # mid cluster: 20000..21000
-    ids += [rand_id(D, 20000, 21000) for _ in range(70)]
-    # high cluster: 90000..99999
-    ids += [rand_id(D, 90000, 99999) for _ in range(70)]
-    random.shuffle(ids)
-    write_case(secret_dir, name, ids, D)
+    nums = []
+    nums += [rand_serial(0, 500) for _ in range(80)]
+    nums += [rand_serial(2000, 2500) for _ in range(70)]
+    nums += [rand_serial(9000, 10000) for _ in range(70)]
+    random.shuffle(nums)
+    write_case(secret_dir, "secret12", nums)
 
-    # secret13: Alternating extremes (very small vs very large)
-    name = "secret13"
-    D = 5
-    ids = []
+    nums = []
     for _ in range(110):
-        ids.append(rand_id(D, 0, 100))
-        ids.append(rand_id(D, 90000, 99999))
-    ids = ids[:200]  # ensure N = 200
-    random.shuffle(ids)
-    write_case(secret_dir, name, ids, D)
+        nums.append(rand_serial(0, 100))
+        nums.append(rand_serial(9900, 10000))
+    random.shuffle(nums)
+    write_case(secret_dir, "secret13", nums)
 
-    # secret14: Repeating short pattern (many duplicates of a few values)
-    name = "secret14"
-    D = 3
-    pattern = ["000", "001", "010", "011", "100"]
-    ids = [random.choice(pattern) for _ in range(200)]
-    write_case(secret_dir, name, ids, D)
+    pattern = [0, 1, 10, 11, 100]
+    write_case(secret_dir, "secret14", [random.choice(pattern) for _ in range(200)])
 
-    # secret15: Many duplicates near boundaries with leading zeros
-    name = "secret15"
-    D = 6
-    ids = []
-    # near 0 (e.g., 000000..000100)
-    ids += [rand_id(D, 0, 100) for _ in range(60)]
-    # near upper bound (e.g., 999900..999999)
-    ids += [rand_id(D, 999900, 999999) for _ in range(60)]
-    # some mid values
-    ids += [rand_id(D, 500000, 500100) for _ in range(60)]
-    random.shuffle(ids)
-    write_case(secret_dir, name, ids, D)
+    nums = []
+    nums += [rand_serial(0, 100) for _ in range(60)]
+    nums += [rand_serial(9900, 10000) for _ in range(60)]
+    nums += [rand_serial(4500, 4600) for _ in range(60)]
+    random.shuffle(nums)
+    write_case(secret_dir, "secret15", nums)
 
-    # ------------- Large / TLE-style cases -------------
+    # ---------- HUGE tests with small value range (0..10) ----------
 
-    # Note: N are chosen to be reasonably large but still safe
-    # for the assignment's total input size < 500 KB.
+    BIG_N = 1_000_000  # max n from problem
 
-    # secret16: Large N random 3-digit IDs
-    name = "secret16"
-    D = 3
-    N = 2000
-    ids = [rand_id(D) for _ in range(N)]
-    write_case(secret_dir, name, ids, D)
+    # secret16: all random in [0, 10]
+    nums = [rand_serial(0, 10) for _ in range(BIG_N)]
+    write_case(secret_dir, "secret16", nums)
 
-    # secret17: Large N 3-digit IDs, dense small range (0..50) with many duplicates
-    name = "secret17"
-    D = 3
-    N = 2000
-    ids = [rand_id(D, 0, 50) for _ in range(N)]
-    write_case(secret_dir, name, ids, D)
+    # secret17: random in [0, 10], but with a heavy bias to one value
+    nums = []
+    for _ in range(BIG_N):
+        if random.random() < 0.8:
+            nums.append(5)   # dominant value
+        else:
+            nums.append(rand_serial(0, 10))
+    write_case(secret_dir, "secret17", nums)
 
-    # secret18: Large N 4-digit IDs, already sorted (best-case)
-    name = "secret18"
-    D = 4
-    N = 3000
-    vals = sorted(random.randint(0, 9999) for _ in range(N))
-    ids = [f"{v:0{D}d}" for v in vals]
-    write_case(secret_dir, name, ids, D)
+    # secret18: alternating low/high in [0, 10]
+    nums = []
+    for i in range(BIG_N):
+        if i % 2 == 0:
+            nums.append(rand_serial(0, 3))
+        else:
+            nums.append(rand_serial(7, 10))
+    write_case(secret_dir, "secret18", nums)
 
-    # secret19: Large N 4-digit IDs, strictly descending (worst-case ordering)
-    name = "secret19"
-    D = 4
-    N = 3000
-    vals = sorted((random.randint(0,9999) for _ in range(N)), reverse=True)
-    ids = [f"{v:0{D}d}" for v in vals]
-    write_case(secret_dir, name, ids, D)
+    # secret19: long runs of same numbers in [0, 10]
+    nums = []
+    block_vals = [0, 3, 7, 10]
+    block_size = 5000
+    while len(nums) < BIG_N:
+        v = random.choice(block_vals)
+        nums.extend([v] * block_size)
+    nums = nums[:BIG_N]
+    random.shuffle(nums)  # optional: remove if you want obvious runs
+    write_case(secret_dir, "secret19", nums)
 
-    # secret20: Large N 6-digit IDs, half very small, half very large
-    name = "secret20"
-    D = 6
-    N = 4000
-    ids = []
-    # very small 0..1000
-    ids += [rand_id(D, 0, 1000) for _ in range(N // 2)]
-    # very large 900000..999999
-    ids += [rand_id(D, 900000, 999999) for _ in range(N - N // 2)]
-    random.shuffle(ids)
-    write_case(secret_dir, name, ids, D)
-
+    # secret20: mixture: half zeros, half random [0, 10]
+    nums = [0] * (BIG_N // 2) + [rand_serial(0, 10) for _ in range(BIG_N - BIG_N // 2)]
+    random.shuffle(nums)
+    write_case(secret_dir, "secret20", nums)
 
 # ============================================================
 # Main Entry Point
@@ -285,8 +186,8 @@ def generate_secret_cases(secret_dir: Path):
 def main():
     random.seed(RANDOM_SEED)
 
-    # The script is located in: test case generator/
-    # The problem root directory is one level above
+    # Script is assumed to live in "test case generator/".
+    # Problem root directory is one level above.
     root = Path(__file__).resolve().parents[1]
 
     data_dir = root / "data"
@@ -308,3 +209,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
