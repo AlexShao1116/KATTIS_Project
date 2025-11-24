@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class Main {
+public class solution_correct {
 
     public static int[] countSortInverse(int[] serialNumbers) {
         if (serialNumbers.length == 0) {
@@ -9,30 +9,32 @@ public class Main {
 
         int n = serialNumbers.length;
 
-        // find max
+        // find-> max
         int maxSerial = 0;
         for (int s : serialNumbers) {
             if (s > maxSerial) {
                 maxSerial = s;
             }
         }
-
-        // create frequency array
+        
+        //freq of each
         int[] countArr = new int[maxSerial + 1];
 
+        // get freq of each element
         for (int serial : serialNumbers) {
             countArr[serial]++;
         }
 
-        // compute suffix sums for descending order
+        //(special part for this question) compute sum backwards
+        // freqArr[x] = nb of elements >= x
         for (int i = maxSerial - 1; i >= 0; i--) {
             countArr[i] += countArr[i + 1];
         }
 
-        // output array
+        // build sorted array
         int[] sortedSerials = new int[n];
 
-        // iterate in reverse to keep it stable
+        // stable: iterate backwards
         for (int i = n - 1; i >= 0; i--) {
             int serial = serialNumbers[i];
             sortedSerials[countArr[serial] - 1] = serial;
@@ -41,23 +43,23 @@ public class Main {
 
         return sortedSerials;
     }
-
+    
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
 
-        int nbPiecesReceived = sc.nextInt();
-        int[] serialNumbers = new int[nbPiecesReceived];
+        int nb_pieces_received = sc.nextInt();
+        int[] list_serial_nb = new int[nb_pieces_received];
 
-        for (int i = 0; i < nbPiecesReceived; i++) {
-            serialNumbers[i] = sc.nextInt();
+        for (int i = 0; i < nb_pieces_received; i++) {
+            list_serial_nb[i] = sc.nextInt();
         }
 
-        int[] sortedSerials = countSortInverse(serialNumbers);
+        int[] sorted_serial_nb_pieces = countSortInverse(list_serial_nb);
 
         // print in one line with spaces
-        for (int i = 0; i < sortedSerials.length; i++) {
+        for (int i = 0; i < sorted_serial_nb_pieces.length; i++) {
             if (i > 0) System.out.print(" ");
-            System.out.print(sortedSerials[i]);
+            System.out.print(sorted_serial_nb_pieces[i]);
         }
         System.out.println();
     }

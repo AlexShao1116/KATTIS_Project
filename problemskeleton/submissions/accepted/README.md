@@ -30,7 +30,7 @@ No, other comparison that is O(nlogn) or O(n^2) would not pass when the test cas
 When n approx = 1 000 000 and m max number is very small (range from 0 in our case), it is almost O(n).
 
 ## Which of the three programming languages performed best?
-C++ -> Java -> Python
+C++ -> Python -> Java
 
 ## Which language was most suitable for implementing your solution, and why?
 C++
